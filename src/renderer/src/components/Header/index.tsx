@@ -2,26 +2,27 @@ import classNames from 'classnames'
 import { Minus, Pin, Settings, X } from 'lucide-react'
 import React, { useState } from 'react'
 import { Separator } from '@renderer/components/ui/separator'
+import { SendEnum } from '@src/types/ipc-constants'
 
 export default function Header(): React.JSX.Element {
   const [isOnTop, setIsOnTop] = useState(false)
 
   const handleClose = (): void => {
-    window.electronAPI.ipcRenderer.send('window-control', 'close')
+    window.electronAPI.ipcRenderer.send(SendEnum.CLOSE)
   }
-  const handleHide = (): void => {
-    window.electronAPI.ipcRenderer.send('window-control', 'minimize')
+  const handleMinimize = (): void => {
+    window.electronAPI.ipcRenderer.send(SendEnum.MINIMIZE)
   }
 
   const handleSetAlwaysOnTop = (): void => {
-    window.electronAPI.ipcRenderer.send('window-control', 'set-always-on-top')
+    window.electronAPI.ipcRenderer.send(SendEnum.SET_ALWAYS_ON_TOP)
     setIsOnTop(!isOnTop)
   }
 
   return (
-    <div className="bg-[#DDE3E9] flex flex-row items-center justify-between p-2">
+    <div className="bg-[#DDE3E9] flex flex-row items-center justify-between p-2 [app-region:drag]">
       <div></div>
-      <div className="flex flex-row gap-3 items-center">
+      <div className="flex flex-row gap-3 items-center [app-region:no-drag]">
         <div className="flex gap-2 items-center">
           <Pin
             size={16}
@@ -36,7 +37,7 @@ export default function Header(): React.JSX.Element {
         <div className="text-black flex gap-2 items-center">
           <div
             className="p-0.5 cursor-pointer rounded-2xl hover:bg-[#C6CCD1] hover:text-black"
-            onClick={handleHide}
+            onClick={handleMinimize}
           >
             <Minus size={16} />
           </div>
