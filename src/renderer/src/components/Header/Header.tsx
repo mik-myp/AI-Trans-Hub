@@ -24,7 +24,7 @@ export default function Header(): React.JSX.Element {
   }
 
   return (
-    <div className="bg-[#DDE3E9] flex flex-row items-center justify-between p-2 [app-region:drag]">
+    <div className="flex flex-row items-center justify-between p-2 [app-region:drag]">
       <div></div>
       <div className="flex flex-row gap-3 items-center [app-region:no-drag]">
         <div className="flex gap-2 items-center">

@@ -8,5 +8,25 @@ export enum IpcChannel {
   // 打开设置窗口
   OPEN_SETTINGS = 'OPEN_SETTINGS',
   // 关闭设置窗口
-  CLOSE_SETTINGS = 'CLOSE_SETTINGS'
+  CLOSE_SETTINGS = 'CLOSE_SETTINGS',
+
+  // 获取 AI 设置
+  GET_AI_SETTINGS = 'GET_AI_SETTINGS',
+  // 保存 AI 设置
+  SET_AI_SETTINGS = 'SET_AI_SETTINGS',
+  // 导出 AI 设置（JSON）
+  EXPORT_AI_SETTINGS = 'EXPORT_AI_SETTINGS',
+  // 导入 AI 设置（JSON）
+  IMPORT_AI_SETTINGS = 'IMPORT_AI_SETTINGS',
+  // 翻译
+  TRANSLATE = 'TRANSLATE',
+
+  // 获取应用信息（版本等）
+  GET_APP_INFO = 'GET_APP_INFO',
+  // 检查更新
+  CHECK_FOR_UPDATES = 'CHECK_FOR_UPDATES',
+  // 安装更新并重启
+  INSTALL_UPDATE = 'INSTALL_UPDATE',
+  // 更新事件推送
+  UPDATER_EVENT = 'UPDATER_EVENT'
 }
