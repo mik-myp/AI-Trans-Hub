@@ -1,0 +1,2 @@
+# 对所有文件，默认在仓库中存储为LF
+* text=auto eol=lf
