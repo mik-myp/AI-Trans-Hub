@@ -176,13 +176,10 @@ function Home(): React.JSX.Element {
                   value={languageMode}
                   onValueChange={(value) => setLanguageMode(value as LanguageMode)}
                 >
-                  <SelectTrigger
-                    id="languageMode"
-                    className="h-8 rounded-xl border border-[#E9EEF5] bg-white pl-3 pr-8 text-sm text-[#2D2E31] shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20 appearance-none"
-                  >
+                  <SelectTrigger id="languageMode" className="h-8 w-30 bg-white text-[#2D2E31]">
                     <SelectValue placeholder="选择供应商" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper">
                     <SelectItem key={'auto'} value={'auto'}>
                       英汉互译
                     </SelectItem>

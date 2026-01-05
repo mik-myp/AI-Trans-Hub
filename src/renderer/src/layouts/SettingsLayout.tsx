@@ -45,15 +45,15 @@ export default function SettingsLayout(): React.JSX.Element {
       </div>
       <div className="flex-1 bg-white flex flex-col">
         <div className="h-9 mx-2 [app-region:drag] flex justify-between items-center">
-          <div></div>
+          {/* <div></div>
           <div
             className="[app-region:no-drag] p-0.5 cursor-pointer rounded-2xl text-center hover:bg-[#E41122] hover:text-white"
             onClick={handleClose}
           >
             <X size={16} />
-          </div>
+          </div> */}
         </div>
-        <main className="flex-1 px-9">
+        <main className="flex-1 px-9 py-4 overflow-y-scroll">
           <Outlet />
         </main>
       </div>

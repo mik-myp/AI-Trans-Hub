@@ -8,7 +8,10 @@ function assertNonEmpty(value: string, label: string): void {
   if (!value.trim()) throw new Error(`${label} 不能为空`)
 }
 
-function toGatewayModelIdFromLegacy(provider: string | undefined, model: string | undefined): string {
+function toGatewayModelIdFromLegacy(
+  provider: string | undefined,
+  model: string | undefined
+): string {
   const modelTrimmed = model?.trim() ?? ''
   if (!modelTrimmed) return ''
   if (modelTrimmed.includes('/')) return modelTrimmed
@@ -57,19 +60,22 @@ export default function registerAiIpcHandlers(): void {
     return toPublicAiSettings(next)
   })
 
-  ipcMain.handle(IpcChannel.EXPORT_AI_SETTINGS, async (_event, payload?: { includeApiKey?: boolean }) => {
-    const includeApiKey = Boolean(payload?.includeApiKey)
-    const settings = await readAiSettings()
-    const exported = {
-      version: 2 as const,
-      model: settings.model,
-      ...(includeApiKey && settings.apiKey ? { apiKey: settings.apiKey } : {})
+  ipcMain.handle(
+    IpcChannel.EXPORT_AI_SETTINGS,
+    async (_event, payload?: { includeApiKey?: boolean }) => {
+      const includeApiKey = Boolean(payload?.includeApiKey)
+      const settings = await readAiSettings()
+      const exported = {
+        version: 2 as const,
+        model: settings.model,
+        ...(includeApiKey && settings.apiKey ? { apiKey: settings.apiKey } : {})
+      }
+      return {
+        fileName: 'ai-settings.json',
+        json: JSON.stringify(exported, null, 2)
+      }
     }
-    return {
-      fileName: 'ai-settings.json',
-      json: JSON.stringify(exported, null, 2)
-    }
-  })
+  )
 
   ipcMain.handle(
     IpcChannel.IMPORT_AI_SETTINGS,
@@ -99,4 +105,3 @@ export default function registerAiIpcHandlers(): void {
     }
   )
 }
-

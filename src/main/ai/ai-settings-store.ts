@@ -34,7 +34,10 @@ function tryDecryptApiKey(encryptedBase64: string): string | undefined {
   }
 }
 
-function readApiKeyFromStored(obj: { apiKey?: unknown; apiKeyEncrypted?: unknown }): string | undefined {
+function readApiKeyFromStored(obj: {
+  apiKey?: unknown
+  apiKeyEncrypted?: unknown
+}): string | undefined {
   const plain = typeof obj.apiKey === 'string' ? obj.apiKey.trim() : ''
   if (plain) return plain
   const encrypted = typeof obj.apiKeyEncrypted === 'string' ? obj.apiKeyEncrypted : ''

@@ -12,8 +12,8 @@ class MainWindow {
       return
     }
     this.window = new BrowserWindow({
-      width: 800,
-      height: 540,
+      minWidth: 800,
+      minHeight: 540,
       show: false,
       frame: false,
       titleBarStyle: 'hidden',

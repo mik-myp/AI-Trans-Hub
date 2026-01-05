@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle
 } from '@renderer/components/ui/card'
+import { Checkbox } from '@renderer/components/ui/checkbox'
 import { Input } from '@renderer/components/ui/input'
 import { Label } from '@renderer/components/ui/label'
 import {
@@ -147,7 +148,7 @@ export default function Settings(): React.JSX.Element {
   }
 
   return (
-    <div className="max-w-3xl space-y-4">
+    <div className="space-y-4">
       <Card>
         <CardHeader>
           <CardTitle>AI Gateway 配置</CardTitle>
@@ -207,7 +208,11 @@ export default function Settings(): React.JSX.Element {
           </div>
 
           <div className="flex justify-end">
-            <Button type="button" onClick={() => void handleSave()} disabled={isLoading || isSaving}>
+            <Button
+              type="button"
+              onClick={() => void handleSave()}
+              disabled={isLoading || isSaving}
+            >
               保存
             </Button>
           </div>
@@ -220,35 +225,45 @@ export default function Settings(): React.JSX.Element {
           <CardDescription>配置以 JSON 格式导入导出，便于不同设备间迁移。</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                className="accent-[#FB4A3E]"
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2 text-sm">
+              <Checkbox
+                id="exportApiKey"
+                className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
                 checked={includeApiKeyInExport}
-                onChange={(e) => setIncludeApiKeyInExport(e.target.checked)}
+                onCheckedChange={(checked) => setIncludeApiKeyInExport(checked as boolean)}
               />
-              导出时包含 API Key（不推荐）
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                className="accent-[#FB4A3E]"
+              <Label htmlFor="exportApiKey">导出时包含 API Key（不推荐）</Label>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Checkbox
+                id="importApiKey"
+                className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
                 checked={applyApiKeyOnImport}
-                onChange={(e) => setApplyApiKeyOnImport(e.target.checked)}
+                onCheckedChange={(checked) => setApplyApiKeyOnImport(checked as boolean)}
               />
-              导入时应用文件中的 API Key（如果存在）
-            </label>
+              <Label htmlFor="importApiKey">导入时应用文件中的 API Key（如果存在）</Label>
+            </div>
             <div className="text-xs text-muted-foreground">
               建议导出/导入时不包含 API Key，在新设备上手动粘贴更安全。
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <Button type="button" variant="outline" onClick={() => void handleExport()} disabled={isExporting}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => void handleExport()}
+              disabled={isExporting}
+            >
               {isExporting ? '导出中…' : '导出配置'}
             </Button>
-            <Button type="button" variant="outline" onClick={handleImportClick} disabled={isImporting}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleImportClick}
+              disabled={isImporting}
+            >
               {isImporting ? '导入中…' : '导入配置'}
             </Button>
           </div>
@@ -270,4 +285,3 @@ export default function Settings(): React.JSX.Element {
     </div>
   )
 }
-

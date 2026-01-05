@@ -7,12 +7,12 @@ import { IpcChannel } from '@src/types/ipc-channels'
 export default function Header(): React.JSX.Element {
   const [isOnTop, setIsOnTop] = useState(false)
 
-  const handleClose = (): void => {
-    window.electronAPI.ipcRenderer.send(IpcChannel.CLOSE_MAIN)
-  }
-  const handleMinimize = (): void => {
-    window.electronAPI.ipcRenderer.send(IpcChannel.MINIMIZE_MAIN)
-  }
+  // const handleClose = (): void => {
+  //   window.electronAPI.ipcRenderer.send(IpcChannel.CLOSE_MAIN)
+  // }
+  // const handleMinimize = (): void => {
+  //   window.electronAPI.ipcRenderer.send(IpcChannel.MINIMIZE_MAIN)
+  // }
 
   const handleSetAlwaysOnTop = (): void => {
     window.electronAPI.ipcRenderer.send(IpcChannel.SET_ALWAYS_ON_TOP_MAIN)
@@ -24,7 +24,7 @@ export default function Header(): React.JSX.Element {
   }
 
   return (
-    <div className="flex flex-row items-center justify-between p-2 [app-region:drag]">
+    <div className="flex flex-row items-center justify-between px-3 py-2 [app-region:drag]">
       <div></div>
       <div className="flex flex-row gap-3 items-center [app-region:no-drag]">
         <div className="flex gap-2 items-center">
@@ -35,7 +35,7 @@ export default function Header(): React.JSX.Element {
           />
           <Settings size={16} className="cursor-pointer" onClick={handleOpenSettings} />
         </div>
-        <Separator orientation="vertical" className="bg-[#C7C7C7]! h-5! w-0.5!" />
+        {/* <Separator orientation="vertical" className="bg-[#C7C7C7]! h-5! w-0.5!" />
         <div className="text-black flex gap-2 items-center">
           <div
             className="p-0.5 cursor-pointer rounded-2xl hover:bg-[#C6CCD1] hover:text-black"
@@ -49,7 +49,7 @@ export default function Header(): React.JSX.Element {
           >
             <X size={16} />
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )
