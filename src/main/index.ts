@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
-import { mainWindow } from './windowClasses/mainWindow'
-import windowInit from './utils/windowInit'
+import { mainWindow } from './windows/main-window'
+import registerWindowIpcHandlers from './ipc/register-window-ipc-handlers'
 
 function createWindow(): void {
   mainWindow.createWindow()
@@ -16,7 +16,7 @@ app.whenReady().then(() => {
 
   createWindow()
 
-  windowInit()
+  registerWindowIpcHandlers()
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

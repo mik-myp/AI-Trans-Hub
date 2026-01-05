@@ -7,9 +7,13 @@ class MainWindow {
   public window: BrowserWindow | null = null
 
   public createWindow(): void {
+    if (this.window && !this.window.isDestroyed()) {
+      this.window.focus()
+      return
+    }
     this.window = new BrowserWindow({
-      width: 500,
-      height: 300,
+      width: 800,
+      height: 540,
       show: false,
       frame: false,
       titleBarStyle: 'hidden',
