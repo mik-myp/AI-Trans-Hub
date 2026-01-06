@@ -70,43 +70,23 @@ jobs:
       # ========== 提取版本号 ==========
       - name: Extract version from tag
         id: get_version
-        shell: bash
         run: |
-          TAG="${GITHUB_REF_NAME}"
-          VERSION="${TAG#v}"
-          echo "Extracted TAG: $TAG"
-          echo "Extracted VERSION: $VERSION"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          $tag = "${{ github.ref_name }}"
+          $version = $tag -replace '^v', ''
+          Write-Output "Extracted TAG: $tag"
+          Write-Output "Extracted VERSION: $version"
+          Write-Output "tag=$tag" >> $env:GITHUB_OUTPUT
+          Write-Output "version=$version" >> $env:GITHUB_OUTPUT
+        shell: pwsh
 
-      # ========== 创建临时配置文件 ==========
-      - name: Create temporary config file
-        run: |
-          # 如果已有 electron-builder.yml，可以读取并修改
-          if [ -f "electron-builder.yml" ]; then
-            # 使用 yq 或 sed 修改配置文件
-            echo "Found existing electron-builder.yml"
-            cp electron-builder.yml electron-builder-temp.yml
-            # 这里假设你安装了 yq
-            yq eval '.extraMetadata.version = "${{ steps.get_version.outputs.version }}"' -i electron-builder-temp.yml
-          else
-            # 创建新的临时配置
-            cat > electron-builder-temp.yml << EOF
-          extraMetadata:
-            version: ${{ steps.get_version.outputs.version }}
-          EOF
-          fi
-          echo "Temporary config:"
-          cat electron-builder-temp.yml
-
-      # ========== 修改后的打包步骤 ==========
+      # ========== 使用命令行参数传递版本号 ==========
       - name: Package & publish (Windows)
         if: runner.os == 'Windows'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Building with version: ${{ steps.get_version.outputs.version }}"
-          npx electron-builder --win --publish always -c electron-builder-temp.yml
+          npx electron-builder --win --publish always --config.extraMetadata.version="${{ steps.get_version.outputs.version }}"
 
       - name: Package & publish (macOS)
         if: runner.os == 'macOS'
@@ -114,7 +94,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Building with version: ${{ steps.get_version.outputs.version }}"
-          npx electron-builder --mac --publish always -c electron-builder-temp.yml
+          npx electron-builder --mac --publish always --config.extraMetadata.version="${{ steps.get_version.outputs.version }}"
 
       - name: Package & publish (Linux)
         if: runner.os == 'Linux'
@@ -122,4 +102,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Building with version: ${{ steps.get_version.outputs.version }}"
-          npx electron-builder --linux AppImage deb --publish always -c electron-builder-temp.yml
+          npx electron-builder --linux AppImage deb --publish always --config.extraMetadata.version="${{ steps.get_version.outputs.version }}"
