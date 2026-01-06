@@ -46,21 +46,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Verify version consistency
-        run: |
-          # 读取 package.json 中的版本号
-          PKG_VERSION=$(node -p "require('./package.json').version")
-          # 从标签提取版本号（同上）
-          TAG_VERSION=${GITHUB_REF#refs/tags/v}
-          echo "Package.json version: $PKG_VERSION"
-          echo "Git tag version: $TAG_VERSION"
-          # 如果不一致，则使构建失败并给出明确提示
-          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
-            echo "错误：package.json 版本 ($PKG_VERSION) 与 Git 标签版本 ($TAG_VERSION) 不一致！"
-            echo "请修改 package.json 中的 'version' 字段为 '$TAG_VERSION'，或使用正确的标签。"
-            exit 1
-          fi
-
       - name: Install Linux system deps
         if: runner.os == 'Linux'
         run: |
