@@ -1,11 +1,6 @@
 {
   "name": "ai-trans-hub",
-  "version": "0.1.0",
-  "build": {
-    "publish": {
-      "provider": "github"
-    }
-  },
+  "version": "1.0.0",
   "description": "AI-Trans-Hub - Electron + React desktop translation tool",
   "main": "./out/main/index.js",
   "author": "AI-Trans-Hub",
