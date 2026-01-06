@@ -56,10 +56,8 @@ jobs:
       - name: Extract version from tag
         id: get_version
         run: |
-          # 从 GITHUB_REF（例如 refs/tags/v0.1.0）中提取纯数字版本号（0.1.0）
-          VERSION=${GITHUB_REF#refs/tags/v}
+          VERSION=${GITHUB_REF#refs/tags/}
           echo "Extracted VERSION: $VERSION"
-          # 将版本号设置为作业步骤的输出，供后续步骤使用
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       # ========== 以下是修改后的三个打包步骤 ==========
