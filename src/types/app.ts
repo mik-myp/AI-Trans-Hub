@@ -1,6 +1,7 @@
 export interface AppInfo {
   name: string
   version: string
+  isPackaged: boolean
 }
 
 export type UpdaterEvent =

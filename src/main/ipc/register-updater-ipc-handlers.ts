@@ -17,7 +17,12 @@ function initAutoUpdater(): void {
   if (updaterInitialized) return
   updaterInitialized = true
 
+  if (!app.isPackaged) {
+    autoUpdater.forceDevUpdateConfig = true
+  }
+
   autoUpdater.autoDownload = true
+  autoUpdater.autoInstallOnAppQuit = false
 
   autoUpdater.on('checking-for-update', () => {
     broadcastUpdaterEvent({ status: 'checking-for-update' })
@@ -51,7 +56,8 @@ export default function registerUpdaterIpcHandlers(): void {
   ipcMain.handle(IpcChannel.GET_APP_INFO, async (): Promise<AppInfo> => {
     return {
       name: app.getName(),
-      version: app.getVersion()
+      version: app.getVersion(),
+      isPackaged: app.isPackaged
     }
   })
 

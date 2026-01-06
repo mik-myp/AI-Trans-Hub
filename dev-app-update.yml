@@ -1,3 +1,4 @@
-provider: generic
-url: https://example.com/auto-updates
-updaterCacheDirName: electron-app-updater
+provider: github
+owner: mik-myp
+repo: AI-Trans-Hub
+updaterCacheDirName: ai-trans-hub-updater

@@ -11,7 +11,7 @@ const defaultSettings: AiSettingsStored = {
 }
 
 function getSettingsPath(): string {
-  return join(app.getPath('userData'), 'ai-settings.json')
+  return join(app.getPath('userData'), 'ai-trans-hub-settings.json')
 }
 
 function tryDecryptApiKey(encryptedBase64: string): string | undefined {

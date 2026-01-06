@@ -96,7 +96,7 @@ export default function Settings(): React.JSX.Element {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = result.fileName || 'ai-settings.json'
+      a.download = result.fileName || 'ai-trans-hub-settings.json'
       document.body.appendChild(a)
       a.click()
       a.remove()

@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: electron-app
+appId: com.hub.trans.ai
+productName: AI-Trans-Hub
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: electron-app
+  executableName: AI-Trans-Hub
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
@@ -33,11 +33,14 @@ linux:
     - AppImage
     - snap
     - deb
-  maintainer: electronjs.org
+  maintainer: AI-Trans-Hub
   category: Utility
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
+  provider: github
+  owner: mik-myp
+  repo: AI-Trans-Hub
+  releaseType: release
+  updaterCacheDirName: ai-trans-hub-updater

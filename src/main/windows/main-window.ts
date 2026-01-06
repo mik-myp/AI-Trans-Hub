@@ -23,7 +23,7 @@ class MainWindow {
         color: '#FAFCFE',
         symbolColor: '#0a0a0a'
       },
-      ...(process.platform === 'linux' ? { icon } : {}),
+      icon,
       webPreferences: {
         preload: join(__dirname, '../preload/index.js'),
         sandbox: false,

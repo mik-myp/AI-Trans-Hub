@@ -34,9 +34,6 @@ export default function About(): React.JSX.Element {
   useEffect(() => {
     const listener = (_event: unknown, payload: UpdaterEvent): void => {
       setUpdateEvent(payload)
-      if (payload.status === 'error') {
-        toast.error(payload.message)
-      }
     }
 
     window.electronAPI.ipcRenderer.on(IpcChannel.UPDATER_EVENT, listener)
@@ -66,19 +63,14 @@ export default function About(): React.JSX.Element {
   }, [updateEvent])
 
   const canInstall = updateEvent?.status === 'update-downloaded'
+  const isDownloading =
+    updateEvent?.status === 'update-available' || updateEvent?.status === 'download-progress'
+  const disableAction = isChecking || updateEvent?.status === 'checking-for-update' || isDownloading
 
   const handleCheckUpdates = async (): Promise<void> => {
     setIsChecking(true)
     try {
-      const result = (await window.electronAPI.ipcRenderer.invoke(
-        IpcChannel.CHECK_FOR_UPDATES
-      )) as {
-        ok: boolean
-        message?: string
-      }
-      if (!result.ok) {
-        toast.error(result.message || '检查更新失败')
-      }
+      await window.electronAPI.ipcRenderer.invoke(IpcChannel.CHECK_FOR_UPDATES)
     } catch (error) {
       toast.error(toUserErrorMessage(error) ?? '检查更新失败')
     } finally {
@@ -107,6 +99,11 @@ export default function About(): React.JSX.Element {
             <div className="mt-1 font-medium text-foreground">
               {appInfo ? `${appInfo.name} v${appInfo.version}` : '加载中…'}
             </div>
+            {appInfo ? (
+              <div className="mt-1 text-xs text-muted-foreground">
+                {appInfo.isPackaged ? '已打包版本' : '开发模式'}
+              </div>
+            ) : null}
           </div>
 
           <div className="text-sm">
@@ -118,15 +115,16 @@ export default function About(): React.JSX.Element {
             <Button
               type="button"
               onClick={() => void (canInstall ? handleInstallUpdate() : handleCheckUpdates())}
-              disabled={isChecking}
+              disabled={disableAction}
             >
               {canInstall ? '重启安装' : '检查更新'}
             </Button>
           </div>
 
           <div className="text-xs text-muted-foreground">
-            提示：需要在 `electron-builder.yml` / `dev-app-update.yml` 配置正确的 `publish`
-            才能正常检查更新。
+            提示：更新源为 GitHub Releases（
+            <code className="font-mono">mik-myp/AI-Trans-Hub</code>），通过 GitHub Actions 发布
+            Release 后即可检查更新。
           </div>
         </CardContent>
       </Card>
