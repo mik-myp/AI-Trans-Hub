@@ -16,10 +16,14 @@ class SettingsWindow {
       minWidth: 750,
       minHeight: 500,
       show: false,
-      frame: false,
       title: '设置',
       titleBarStyle: 'hidden',
       maximizable: false,
+      titleBarOverlay: {
+        height: 32,
+        color: '#FAFCFE',
+        symbolColor: '#0a0a0a'
+      },
       ...(process.platform === 'linux' ? { icon } : {}),
       webPreferences: {
         preload: join(__dirname, '../preload/index.js'),

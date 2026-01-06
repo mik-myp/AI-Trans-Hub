@@ -10,6 +10,7 @@ import type { AppInfo, UpdaterEvent } from '@src/types/app'
 import { IpcChannel } from '@src/types/ipc-channels'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import { toUserErrorMessage } from '@renderer/lib/ipc'
 
 export default function About(): React.JSX.Element {
   const [appInfo, setAppInfo] = useState<AppInfo | null>(null)
@@ -24,7 +25,7 @@ export default function About(): React.JSX.Element {
         )) as AppInfo
         setAppInfo(info)
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : '获取版本信息失败')
+        toast.error(toUserErrorMessage(error) ?? '获取版本信息失败')
       }
     }
     void load()
@@ -79,7 +80,7 @@ export default function About(): React.JSX.Element {
         toast.error(result.message || '检查更新失败')
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : '检查更新失败')
+      toast.error(toUserErrorMessage(error) ?? '检查更新失败')
     } finally {
       setIsChecking(false)
     }
@@ -89,7 +90,7 @@ export default function About(): React.JSX.Element {
     try {
       await window.electronAPI.ipcRenderer.invoke(IpcChannel.INSTALL_UPDATE)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : '安装更新失败')
+      toast.error(toUserErrorMessage(error) ?? '安装更新失败')
     }
   }
 

@@ -15,9 +15,14 @@ class MainWindow {
       minWidth: 800,
       minHeight: 540,
       show: false,
-      frame: false,
+      title: 'AI-Trans-Hub',
       titleBarStyle: 'hidden',
       maximizable: false,
+      titleBarOverlay: {
+        height: 32,
+        color: '#FAFCFE',
+        symbolColor: '#0a0a0a'
+      },
       ...(process.platform === 'linux' ? { icon } : {}),
       webPreferences: {
         preload: join(__dirname, '../preload/index.js'),

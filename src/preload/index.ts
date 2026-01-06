@@ -1,18 +1,19 @@
 import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
+// Custom APIs for renderer
+const customElectronAPI = {}
+
 if (process.contextIsolated) {
   try {
-    contextBridge.exposeInMainWorld('electronAPI', {
-      ...electronAPI
-    })
+    contextBridge.exposeInMainWorld('electronAPI', electronAPI)
+    contextBridge.exposeInMainWorld('customElectronAPI', customElectronAPI)
   } catch (error) {
     console.error(error)
   }
 } else {
   // @ts-ignore (define in dts)
   window.electronAPI = electronAPI
+  // @ts-ignore (define in dts)
+  window.customElectronAPI = customElectronAPI
 }

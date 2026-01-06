@@ -1,26 +1,17 @@
 import { app, safeStorage } from 'electron'
 import { mkdir, readFile, writeFile } from 'fs/promises'
 import { dirname, join } from 'path'
-import type { AiSettingsPublic, AiSettingsStored, AiSettingsUpdate } from '@src/types/ai'
+import type { AiSettings, AiSettingsStored } from '@src/types/ai'
 
 const defaultSettings: AiSettingsStored = {
-  version: 2,
-  model: 'openai/gpt-4o-mini',
+  baseURL: undefined,
+  model: 'openai/gpt-5.2',
   apiKey: undefined,
   apiKeyEncrypted: undefined
 }
 
 function getSettingsPath(): string {
   return join(app.getPath('userData'), 'ai-settings.json')
-}
-
-type LegacyAiSettingsV1 = {
-  version?: number
-  provider?: string
-  model?: string
-  baseUrl?: string
-  apiKey?: string
-  apiKeyEncrypted?: string
 }
 
 function tryDecryptApiKey(encryptedBase64: string): string | undefined {
@@ -57,90 +48,35 @@ function toDiskApiKeyPayload(
   }
 }
 
-function toGatewayModelId(provider: string | undefined, model: string | undefined): string {
-  const modelTrimmed = model?.trim() ?? ''
-  if (!modelTrimmed) return defaultSettings.model
-  if (modelTrimmed.includes('/')) return modelTrimmed
-
-  const providerTrimmed = provider?.trim() ?? ''
-  if (!providerTrimmed) return `openai/${modelTrimmed}`
-
-  if (providerTrimmed === 'qwen') return `alibaba/${modelTrimmed}`
-  if (providerTrimmed === 'deepseek') return `deepseek/${modelTrimmed}`
-  if (providerTrimmed === 'ollama' || providerTrimmed === 'custom') return defaultSettings.model
-
-  return `${providerTrimmed}/${modelTrimmed}`
-}
-
-function sanitizeGatewayModelId(value: string | undefined): string {
-  const trimmed = value?.trim() ?? ''
-  if (!trimmed) return defaultSettings.model
-  return trimmed.includes('/') ? trimmed : `openai/${trimmed}`
-}
-
-function sanitizeStoredSettings(value: unknown): AiSettingsStored {
-  if (!value || typeof value !== 'object') return { ...defaultSettings }
-  const obj = value as LegacyAiSettingsV1
-
-  const version = typeof obj.version === 'number' ? obj.version : 1
-  const apiKey = readApiKeyFromStored(obj)
-
-  if (version >= 2) {
-    return {
-      version: 2,
-      model: sanitizeGatewayModelId(obj.model),
-      apiKey
-    }
-  }
-
-  return {
-    version: 2,
-    model: sanitizeGatewayModelId(toGatewayModelId(obj.provider, obj.model)),
-    apiKey
-  }
-}
-
 export async function readAiSettings(): Promise<AiSettingsStored> {
   try {
     const raw = await readFile(getSettingsPath(), 'utf8')
-    return sanitizeStoredSettings(JSON.parse(raw) as unknown)
+
+    const jsonRaw = JSON.parse(raw) as AiSettings
+    const apiKey = readApiKeyFromStored(jsonRaw)
+
+    return {
+      ...jsonRaw,
+      apiKey
+    }
   } catch {
     return { ...defaultSettings }
   }
 }
 
-export function toPublicAiSettings(settings: AiSettingsStored): AiSettingsPublic {
-  return {
-    version: 2,
-    model: settings.model,
-    hasApiKey: Boolean(settings.apiKey)
-  }
-}
-
-export async function writeAiSettings(update: AiSettingsUpdate): Promise<AiSettingsStored> {
+export async function writeAiSettings(update: AiSettingsStored): Promise<AiSettingsStored> {
   const current = await readAiSettings()
 
-  const nextModel = sanitizeGatewayModelId(update.model)
-  const nextApiKey =
-    update.apiKey === undefined
-      ? current.apiKey
-      : update.apiKey.trim()
-        ? update.apiKey.trim()
-        : undefined
+  const nextApiKey = update.apiKey === undefined ? current.apiKey : update.apiKey.trim()
 
   const diskPayload: AiSettingsStored = {
-    version: 2,
-    model: nextModel,
+    ...update,
     ...toDiskApiKeyPayload(nextApiKey)
   }
 
   const filepath = getSettingsPath()
+
   await mkdir(dirname(filepath), { recursive: true })
   await writeFile(filepath, JSON.stringify(diskPayload, null, 2), 'utf8')
-
-  return {
-    version: 2,
-    model: diskPayload.model,
-    apiKey: nextApiKey
-  }
+  return diskPayload
 }

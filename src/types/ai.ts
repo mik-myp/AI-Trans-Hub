@@ -2,21 +2,14 @@ export type LanguageDirection = 'en-zh' | 'zh-en'
 
 export type TranslationTone = 'general' | 'spoken' | 'professional' | 'friendly'
 
-export interface AiSettingsStored {
-  version: 2
+export type AiSettings = {
+  baseURL?: string
   model: string
-  apiKey?: string
+  apiKey: string
+}
+
+export type AiSettingsStored = Omit<AiSettings, 'apiKey'> & {
   apiKeyEncrypted?: string
-}
-
-export interface AiSettingsPublic {
-  version: 2
-  model: string
-  hasApiKey: boolean
-}
-
-export interface AiSettingsUpdate {
-  model: string
   apiKey?: string
 }
 
@@ -29,3 +22,5 @@ export interface TranslateRequest {
 export interface TranslateResponse {
   translation: string
 }
+
+export type LanguageMode = 'auto' | 'en-zh' | 'zh-en'
