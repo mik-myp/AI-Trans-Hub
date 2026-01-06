@@ -27,6 +27,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        # 获取标签信息，这对后续提取版本号很重要
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -43,26 +46,56 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Verify version consistency
+        run: |
+          # 读取 package.json 中的版本号
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          # 从标签提取版本号（同上）
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          echo "Package.json version: $PKG_VERSION"
+          echo "Git tag version: $TAG_VERSION"
+          # 如果不一致，则使构建失败并给出明确提示
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "错误：package.json 版本 ($PKG_VERSION) 与 Git 标签版本 ($TAG_VERSION) 不一致！"
+            echo "请修改 package.json 中的 'version' 字段为 '$TAG_VERSION'，或使用正确的标签。"
+            exit 1
+          fi
+
       - name: Install Linux system deps
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libfuse2 || sudo apt-get install -y libfuse2t64
 
+      # ========== 核心修改开始：在所有打包步骤前提取版本号 ==========
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          # 从 GITHUB_REF（例如 refs/tags/v0.1.0）中提取纯数字版本号（0.1.0）
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "Extracted VERSION: $VERSION"
+          # 将版本号设置为作业步骤的输出，供后续步骤使用
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      # ========== 以下是修改后的三个打包步骤 ==========
       - name: Package & publish (Windows)
         if: runner.os == 'Windows'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx electron-builder --win --publish always
+        run: |
+          # 使用上一步提取的版本号，通过 -c.extraMetadata.version 参数传递给 electron-builder
+          npx electron-builder --win --publish always -c.extraMetadata.version=${{ steps.get_version.outputs.version }}
 
       - name: Package & publish (macOS)
         if: runner.os == 'macOS'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx electron-builder --mac --publish always
+        run: |
+          npx electron-builder --mac --publish always -c.extraMetadata.version=${{ steps.get_version.outputs.version }}
 
       - name: Package & publish (Linux)
         if: runner.os == 'Linux'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx electron-builder --linux AppImage deb --publish always
+        run: |
+          npx electron-builder --linux AppImage deb --publish always -c.extraMetadata.version=${{ steps.get_version.outputs.version }}
