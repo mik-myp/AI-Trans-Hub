@@ -86,7 +86,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 使用上一步提取的版本号，通过 -c.extraMetadata.version 参数传递给 electron-builder
           npx electron-builder --win --publish always -c.extraMetadata.version=${{ steps.get_version.outputs.version }}
 
       - name: Package & publish (macOS)
