@@ -68,7 +68,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libfuse2 || sudo apt-get install -y libfuse2t64
 
-      # ========== 核心修改开始：在所有打包步骤前提取版本号 ==========
+      # ========== 提取版本号 ==========
       - name: Extract version from tag
         id: get_version
         shell: bash
@@ -80,24 +80,24 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      # ========== 以下是修改后的三个打包步骤 ==========
+      # ========== 修改后的打包步骤 ==========
       - name: Package & publish (Windows)
         if: runner.os == 'Windows'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx electron-builder --win --publish always -c.extraMetadata.version=${{ steps.get_version.outputs.version }}
+          npx electron-builder --win --publish always --extraMetadata.version=${{ steps.get_version.outputs.version }}
 
       - name: Package & publish (macOS)
         if: runner.os == 'macOS'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx electron-builder --mac --publish always -c.extraMetadata.version=${{ steps.get_version.outputs.version }}
+          npx electron-builder --mac --publish always --extraMetadata.version=${{ steps.get_version.outputs.version }}
 
       - name: Package & publish (Linux)
         if: runner.os == 'Linux'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx electron-builder --linux AppImage deb --publish always -c.extraMetadata.version=${{ steps.get_version.outputs.version }}
+          npx electron-builder --linux AppImage deb --publish always --extraMetadata.version=${{ steps.get_version.outputs.version }}
