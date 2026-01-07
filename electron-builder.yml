@@ -9,15 +9,30 @@ files:
   - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - package.json
+  - 'out/**/*'
+  - 'node_modules/**/*'
+extraResources:
+  - resources
+  - eng.traineddata
+  - chi_sim.traineddata
 asarUnpack:
   - resources/**
+  - '**/node_modules/tesseract.js-core/**'
 win:
+  icon: resources/icon.png
   executableName: AI-Trans-Hub
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
-  createDesktopShortcut: always
+  oneClick: false # 关闭一键安装，让用户看到安装向导
+  perMachine: false # 设置为当前用户安装，而非所有用户（通常需要更低权限）
+  allowToChangeInstallationDirectory: true # 允许用户选择安装目录
+  createDesktopShortcut: true # 创建桌面快捷方式
+  createStartMenuShortcut: true # 创建开始菜单快捷方式
+portable:
+  artifactName: ${name}-${version}-portable.exe
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:

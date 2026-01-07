@@ -5,6 +5,9 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   main: {
+    build: {
+      emptyOutDir: true // 构建前清空 out 目录
+    },
     resolve: {
       alias: {
         '@src': resolve('src')
@@ -13,6 +16,9 @@ export default defineConfig({
   },
   preload: {},
   renderer: {
+    build: {
+      emptyOutDir: true // 构建前清空 dist 目录
+    },
     resolve: {
       alias: {
         '@renderer': resolve('src/renderer/src'),

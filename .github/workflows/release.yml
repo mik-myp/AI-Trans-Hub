@@ -13,24 +13,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  create_release:
-    name: Create Release (${{ github.ref_name }})
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Create GitHub release (name == tag)
-        uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-
   build:
     name: Build (${{ matrix.os }})
-    needs: create_release
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -43,20 +27,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: yarn
 
       - name: Enable Corepack
         run: corepack enable
 
+      - name: Cleanup
+        uses: actions/cleanup-action@v4
+        with:
+          paths: |
+            dist/
+            out/
+
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm install
 
       - name: Build
         run: npm run build
@@ -67,39 +55,20 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libfuse2 || sudo apt-get install -y libfuse2t64
 
-      # ========== 提取版本号 ==========
-      - name: Extract version from tag
-        id: get_version
-        run: |
-          $tag = "${{ github.ref_name }}"
-          $version = $tag -replace '^v', ''
-          Write-Output "Extracted TAG: $tag"
-          Write-Output "Extracted VERSION: $version"
-          Write-Output "tag=$tag" >> $env:GITHUB_OUTPUT
-          Write-Output "version=$version" >> $env:GITHUB_OUTPUT
-        shell: pwsh
-
-      # ========== 使用命令行参数传递版本号 ==========
       - name: Package & publish (Windows)
         if: runner.os == 'Windows'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Building with version: ${{ steps.get_version.outputs.version }}"
-          npx electron-builder --win --publish always --config.extraMetadata.version="${{ steps.get_version.outputs.version }}"
+        run: npx electron-builder --win --publish always
 
       - name: Package & publish (macOS)
         if: runner.os == 'macOS'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Building with version: ${{ steps.get_version.outputs.version }}"
-          npx electron-builder --mac --publish always --config.extraMetadata.version="${{ steps.get_version.outputs.version }}"
+        run: npx electron-builder --mac --publish always
 
       - name: Package & publish (Linux)
         if: runner.os == 'Linux'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Building with version: ${{ steps.get_version.outputs.version }}"
-          npx electron-builder --linux AppImage deb --publish always --config.extraMetadata.version="${{ steps.get_version.outputs.version }}"
+        run: npx electron-builder --linux AppImage deb --publish always
